@@ -35,21 +35,53 @@ A reward of +1 is provided for collecting a yellow banana, and a reward of -1 is
 ## Getting Started
 
 
-#### Step 1: Clone the DRLND Repository
+#### Step 1: Clone the Repository
 
-If you haven't already, please follow the instructions in the DRLND GitHub repository to set up your Python environment. These instructions can be found in README.md at the root of the repository. By following these instructions, you will install PyTorch, the ML-Agents toolkit, and a few more Python packages required to complete the project.
+You will need a python 3.6 environment set up. To be able to train and run the agents, you will need the install the dependencies. Do do so, clone the repostory and install the required packages. With the following commands you will install PyTorch, the ML-Agents toolkit, and a few more Python packages required.
 
+```python
+git clone https://github.com/F1r3m4n/deep-reinforcement-learning.git
+cd deep-reinforcement-learning/python
+pip install .
+```
 
 
 #### Step 2: Download the Unity Environment
 
-For this project, you will not need to install Unity - this is because we have already built the environment for you, and you can download it from one of the links below. You need only select the environment that matches your operating system:
+The repository already has the Windows the Banana environment built and placed in the directory `Banana_Windows_x86_64`. To run on linux or mac you can download the built environment following the links that matches your operating system:
 
-Linux: 
-Mac OSX: 
-Windows (64-bit): 
+* Linux: [here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P1/Banana/Banana_Linux.zip)
+* Mac OSX: [here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P1/Banana/Banana.app.zip)
 
-Place the file in the p1_navigation/ folder in the DRLND GitHub repository, and unzip (or decompress) the file.
+Replace the Place the `Banana_Windows_x86_64` directory in the `p1_navigation/` folder repository with teh corresponding unzipped directory of your choice.
 
 
 ## Instructions
+
+Once your environment is set up, navigate to the `p1_navigation` and follow the instructions beneath to train an agent or to run a simulation. 
+
+#### Training an Agent
+
+To train an agent run the `learn.py` script. By default this trains a DQN agent (see report for more details). You can instead choose whether you want the agent to use a Double DQN algorithm or a Dueling architecture or both. For example to train an agent with both improvements run the following command:
+
+```python
+python learn.py -ddqn True -duel True
+```
+
+For more information on the options available run
+
+```python
+python learn.py -h
+```
+
+#### Running a simulation
+
+To run a simulation with you agent of choice run the following command:
+
+```python
+python run.py -ddqn True -duel True
+```
+
+This will open a window showing your agent navigating the banana environment. 4 pre-trained agents are included in the repo.
+
+Enjoy!
