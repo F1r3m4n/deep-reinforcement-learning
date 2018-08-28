@@ -17,7 +17,7 @@ Below is a short summary of the four learning algorithm used to train agents tha
 
 The Deep Q-Learning algorithm represents the optimal action-value function as a neural network instead of a table. The DQN takes the state as input and returns the predicted action values for each possible action.
 
-<img src="images/dqn.png" width="500" height="300" />
+<img align=center src="images/dqn.png" width="400" height="250" />
 
 A naive form of the reinforcement learning algorithm with neural networks is unstable and so this version of the algorithm addresses these instabilities by using two key features:
 
@@ -47,7 +47,7 @@ Their dueling network represents two separate estimators:
 
 The main benefit of this factoring is to generalize learning across actions without imposing any change to the underlying reinforcement learning algorithm. Their results show that this architecture leads to better policy evaluation in the presence of many similar-valued actions. 
 
-<img src="images/dqn.png" width="500" height="300" />
+<img align=center src="images/dueldqn.png" width="400" height="250" />
 
 
 #### Dueling Double Deep Q-learning (Dueling DDQN)
