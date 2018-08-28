@@ -166,7 +166,7 @@ class DDQNAgent(BaseAgent):
 
         # Compute and minimize the loss
         
-        # (van Hasselt et al., 2015), in Double DQN, the online network predicts the actions
+        # (van Hasselt et al., 2015), in Double DQN, the local network predicts the actions
         # while the target network is used to estimate the Q value.
         
         # Get next actons from local network
