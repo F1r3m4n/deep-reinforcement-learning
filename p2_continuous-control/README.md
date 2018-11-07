@@ -7,30 +7,28 @@
 
 The aim of this project is to train an agent to navigate and collect yellow bananas in a large, square world. The task is episodic, and in order to solve the environment, the agent must get an average score of +15 over 100 consecutive episodes.
 
+The aim of this project is to train an agent to manipulate a double-jointed arm so that it can move to target locations. A reward of +0.1 is provided for each step that the agent's hand is in the goal location. Thus, the goal of the agent is to maintain its position at the target location for as many time steps as possible. The task is episodic (fixed number of timesteps), and in order to solve the environment, the agent must get an average score of +30 over 100 consecutive episodes.
+
+
 
 #### State 
 
-The state space has 37 dimensions and contains the agent's velocity, along with ray-based perception of objects around the agent's forward direction. Given this information, the agent has to learn how to best select actions. 
+The observation space consists of 33 variables corresponding to position, rotation, velocity, and angular velocities of the arm.. Given this information, the agent has to learn how to best move the arm when performing an action. 
 
 
 #### Actions
 
-Four discrete actions are available, corresponding to:
-
-* 0 - move forward.
-* 1 - move backward.
-* 2 - turn left.
-* 3 - turn right.
+Each action is a vector with four numbers, corresponding to torque applicable to two joints. Every entry in the action vector should be a number between -1 and 1.
 
 
 #### Rewards
 
-A reward of +1 is provided for collecting a yellow banana, and a reward of -1 is provided for collecting a blue banana. Thus, the goal of the agent is to collect as many yellow bananas as possible while avoiding blue bananas in a given time frame.
+A reward of +0.1 is provided for each step that the agent's hand is in the goal location. Thus, the goal of the agent is to maintain the edge of the robotic arm within the target location for as long as possible within a given time frame.
 
 
 #### Expected Behaviour
 
-<img src="images/Continuous_Control.gif" width="800" height="500" />
+<img src="images/Continuous_Control.gif" width="800" height="400" />
 
 
 
@@ -50,24 +48,24 @@ pip install .
 
 #### Step 2: Download the Unity Environment
 
-The repository already has the Windows the Banana environment built and placed in the directory `Banana_Windows_x86_64`. To run on linux or mac you can download the built environment following the links that matches your operating system:
+The repository already has the Mac OSX the Reacher environment built and placed in the directory `p2_continuous-control`. To run on Linux or Windows you can download the built environment following the links that matches your operating system:
 
-* Linux: [here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P1/Banana/Banana_Linux.zip)
-* Mac OSX: [here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P1/Banana/Banana.app.zip)
+* Linux: [here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P2/Reacher/one_agent/Reacher_Linux.zip)
+* Windows: [here](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P2/Reacher/one_agent/Reacher_Windows_x86_64.zip)
 
-Replace the Place the `Banana_Windows_x86_64` directory in the `p1_navigation/` folder repository with teh corresponding unzipped directory of your choice.
+Replace the `Reacher` executable in the `p2_continuous-control/` folder of the repository with the corresponding unzipped file of your choice.
 
 
 ## Instructions
 
-Once your environment is set up, navigate to the `p1_navigation` and follow the instructions beneath to train an agent or to run a simulation. 
+Once your environment is set up, navigate to the `p2_continuous-control` and follow the instructions beneath to train an agent or to run a simulation. 
 
 #### Training an Agent
 
-To train an agent run the `learn.py` script. By default this trains a DQN agent (see report for more details). You can instead choose whether you want the agent to use a Double DQN algorithm or a Dueling architecture or both. For example to train an agent with both improvements run the following command:
+To train an agent run the `learn.py` script. By default this trains a DDPG agent with OU noise for action space exploration (see report for more details). You can choose whether you want the agent to train without additional noise. For example to train an agent without noise run the following command:
 
 ```python
-python learn.py -ddqn True -duel True
+python learn.py -OUnoise False 
 ```
 
 For more information on the options available run
@@ -81,9 +79,7 @@ python learn.py -h
 To run a simulation with you agent of choice run the following command:
 
 ```python
-python run.py -ddqn True -duel True
+python run.py 
 ```
 
-This will open a window showing your agent navigating the banana environment. 4 pre-trained agents are included in the repo.
-
-Enjoy!
+This will open a window showing your agent manipulating the arm in the Reacher environment. A pre-trained agent is included in the repo.
