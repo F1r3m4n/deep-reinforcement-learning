@@ -77,7 +77,7 @@ The following plots of the rewards per episode illustrate that the agent is able
     <th align=center>Agent: DDPG, Solved in: 91 episodes</th>
   </tr>
   <tr>
-    <td align=center><img src="images/dqn_scores.png" width="400" height="300" /></td>
+    <td align=center><img src="images/scores.png" width="400" height="300" /></td>
   </tr>
 </table>
 

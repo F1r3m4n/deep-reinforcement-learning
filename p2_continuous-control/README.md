@@ -30,7 +30,7 @@ A reward of +1 is provided for collecting a yellow banana, and a reward of -1 is
 
 #### Expected Behaviour
 
-<img src="images/Continuous_Control.gif.gif" width="800" height="500" />
+<img src="images/Continuous_Control.gif" width="800" height="500" />
 
 
 
