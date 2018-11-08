@@ -62,10 +62,9 @@ The learning process can be broken into 3 steps:
 
 Similar to DQN, the critic estimates the Q-value function using off-policy
 data and the recursive Bellman equation:
-\\[ Q(s_t, a_t) = r(s_t, a_t) + \gammaQ (s_{t+1}, \pi_{\theta}(s_t+1)) $$
 where $\pi_{\theta}$ is the actor or policy.  \\]
 
-<img src="https://latex.codecogs.com/svg.latex?\Large&space;x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}" title="\Large x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}" />
+<img src="https://latex.codecogs.com/svg.latex?\Large&space;Q(s_t, a_t) = r(s_t, a_t) + \gammaQ (s_{t+1}, \pi_{\theta}(s_t+1))" title="\Large Q(s_t, a_t) = r(s_t, a_t) + \gammaQ (s_{t+1}, \pi_{\theta}(s_t+1))" />
 
 
 **Updating the Critic**
