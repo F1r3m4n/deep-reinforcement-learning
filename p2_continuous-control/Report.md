@@ -21,13 +21,13 @@ Below is a short summary of the components and neural network architectures used
 
 The Actor takes the State as input and outputs the what the agent believes to be the best action (here a set of continues values of the torque for each joint) to maximise long term reward.
 
-<img align=center src="images/actor.png"  height="250" />
+<img align=center src="images/actor.png"  height="220" />
 
 Two separate networks with identical architectures of the Actor are instansiated; one local and one target. The target network's weights are updated less often than the local network. Without fixed targets, we would encounter a harmful form of correlation, whereby we shift the parameters of the network based on a constantly moving target.
 
 #### Critic Network
 
-<img align=center src="images/critic.png"  height="250" />
+<img align=center src="images/critic.png"  height="260" />
 
 The Deep Q-Learning algorithm represents the optimal action-value function as a neural network instead of a table. The DQN takes the state as input and returns the predicted action values for each possible action.
 
@@ -62,8 +62,8 @@ The learning process can be broken into 3 steps:
 
 Similar to DQN, the critic estimates the Q-value function using off-policy
 data and the recursive Bellman equation:
-Q(st, at) = r(st, at) + γQ (st+1, πθ(st+1)),
-where πθ is the actor or policy. 
+$$ Q(s_t, a_t) = r(s_t, a_t) + \gammaQ (s_{t+1}, \pi_{\theta}(s_t+1)) $$
+where $\pi_{\theta}$ is the actor or policy. 
 
 **Updating the Critic**
 
@@ -93,7 +93,7 @@ The following hyperparameters were chosen following a trial and error approach
 
 ## Plot of Rewards
 
-The following plots of the rewards per episode illustrate that the agent is able to receive an average reward (over 100 episodes) of at least +15. The table also shows how many episodes were needed to solve the environment.
+The following plots of the rewards per episode illustrate that the agent is able to receive an average reward (over 100 episodes) of at least +30. The table also shows how many episodes were needed to solve the environment.
 
 <table style="width:500%" border=1>
   <tr>
