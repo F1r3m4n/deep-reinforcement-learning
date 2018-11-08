@@ -21,13 +21,13 @@ Below is a short summary of the components and neural network architectures used
 
 The Actor takes the State as input and outputs the what the agent believes to be the best action (here a set of continues values of the torque for each joint) to maximise long term reward.
 
-<img align=center src="images/actor.png" width="300" height="250" />
+<img align=center src="images/actor.png"  height="250" />
 
 Two separate networks with identical architectures of the Actor are instansiated; one local and one target. The target network's weights are updated less often than the local network. Without fixed targets, we would encounter a harmful form of correlation, whereby we shift the parameters of the network based on a constantly moving target.
 
 #### Critic Network
 
-<img align=center src="images/critic.png" width="300" height="250" />
+<img align=center src="images/critic.png"  height="250" />
 
 The Deep Q-Learning algorithm represents the optimal action-value function as a neural network instead of a table. The DQN takes the state as input and returns the predicted action values for each possible action.
 
