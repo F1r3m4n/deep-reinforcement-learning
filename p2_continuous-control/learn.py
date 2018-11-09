@@ -1,63 +1,54 @@
 import argparse
 from collections import deque 
 import numpy as np
-import sys
-import os
 import torch 
 
 # import environment 
-sys.path.append('../python/')
 from unityagents import UnityEnvironment
-env = UnityEnvironment(file_name="Banana_Windows_x86_64/Banana.exe")
+env = UnityEnvironment(file_name='Reacher.app')
 brain_name = env.brain_names[0]
 brain = env.brains[brain_name]
 
 # import models and agents
-from models import QNetwork, DuelingQNetwork
-from agents import DQNAgent, DDQNAgent
+from models import Actor, Critic 
+from agents import DDPGAgent
 
-
-def learn(agent, name, n_episodes=2000, max_t=1000, eps_start=1.0, eps_end=0.01, eps_decay=0.995):
+            
+def learn(agent, n_episodes=500, noise=True):
     """
-    Deep Q-Learning
+    Train an intelligent agent to interact with environment
     
-    Params
-    ======
-        agent (object): Agent to train
-        name (string): name of agent for saving model parameters
-        n_episodes (int): maximum number of training episodes
-        max_t (int): maximum number of timesteps per episode
-        eps_start (float): starting value of epsilon, for epsilon-greedy action selection
-        eps_end (float): minimum value of epsilon
-        eps_decay (float): multiplicative factor (per episode) for decreasing epsilon
+    :param agent (object): Agent to train
+    :param n_episodes (int): maximum number of training episodes
+    :param noise (bool): whether OU noise should be used in training
     """
     scores_window = deque(maxlen=100)  # last 100 scores
-    eps = eps_start                    # initialize epsilon
     for i_episode in range(1, n_episodes+1):
         env_info = env.reset(train_mode=True)[brain_name] # reset the environment
         state = env_info.vector_observations[0]
         score = 0
-        for t in range(max_t):
-            action = np.int32(agent.act(state, eps))
-            env_info = env.step(action)[brain_name]        # send the action to the environment
-            next_state = env_info.vector_observations[0]   # get the next state
-            reward = env_info.rewards[0]                   # get the reward
-            done = env_info.local_done[0]                  # get whether episode complete
-            agent.step(state, action, reward, next_state, done)
+        while True:
+            action = agent.act(state, add_noise=noise)
+            env_info = env.step(action)[brain_name]              # send the action to the environment
+            next_state = env_info.vector_observations[0]         # get the next state
+            reward = env_info.rewards[0]                         # get the reward
+            done = env_info.local_done[0]                        # get whether episode complete
+            agent.step(state, action, reward, next_state, done)  # perform learning step
             state = next_state
             score += reward
             if done:
                 break 
                 
         # save most recent score
-        scores_window.append(score)       
-        eps = max(eps_end, eps_decay*eps) # decrease epsilon
+        scores_window.append(round(score,2)) 
         
-        if i_episode % 100 == 0:
+        if i_episode % 10 == 0:
             print('\rEpisode {}\tAverage Score: {:.2f}'.format(i_episode, np.mean(scores_window)))
-        if np.mean(scores_window)>=15:
+   
+        if np.mean(scores_window)>=30:
             print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}'.format(i_episode-100, np.mean(scores_window)))
-            torch.save(agent.qnetwork_local.state_dict(), '{}_checkpoint.pth'.format(name))
+            torch.save(agent.actor_local.state_dict(), 'DDPG_actor.pth')
+            torch.save(agent.critic_local.state_dict(), 'DDPG_critic.pth')
             break
 
             
@@ -65,40 +56,20 @@ if __name__ == "__main__":
     
     # Set up arguement parser
     parser = argparse.ArgumentParser()
-    parser.add_argument("-ddqn", "--double_dqn", help="Boolean - Whether to use double deep Q network")
-    parser.add_argument("-duel", "--duelling", help="Boolean - Whether to use duelling architecture")
+    parser.add_argument("-OUnoise", "--OU_noise", help="Boolean - whether to add OU noise to action vector during training")
     args = parser.parse_args()
     
     # Set default parameters
-    if args.double_dqn == 'True':
-        args.double_dqn = True
+    if args.OU_noise == 'False':
+        args.OU_noise = False
+        print('Training DDPG agent without OU noise')
     else: 
-        args.double_dqn = False
-    if args.duelling == 'True':
-        args.duelling = True
-    else: 
-        args.duelling = False
-
-    print("Double DQN {}, Duelling Architecture {}".format(args.double_dqn, args.duelling))
+        args.OU_noise = True
+        print('Training DDPG agent with OU noise')
     
-    # instantiate appropriate agent
-    if (args.double_dqn is True) & (args.duelling is True):
-        agent = DDQNAgent(state_size=37, action_size=4, model=DuelingQNetwork, seed=0)
-        agent_name = 'duel_ddqn'
-    
-    elif (args.double_dqn is True) & (args.duelling is False):
-        agent = DDQNAgent(state_size=37, action_size=4, model=QNetwork, seed=0)
-        agent_name = 'ddqn'
-    
-    elif (args.double_dqn is False) & (args.duelling is True):
-        agent = DQNAgent(state_size=37, action_size=4, model=DuelingQNetwork, seed=0)
-        agent_name = 'duel_dqn'
-        
-    else:
-        agent = DQNAgent(state_size=37, action_size=4, model=QNetwork, seed=0)
-        agent_name = 'dqn'
+    # Instantiate Agent
+    agent = DDPGAgent(state_size=33, action_size=4, model=(Actor, Critic), random_seed=0)
         
     # Learn agent and save model
-    print('Training {} agent'.format(agent_name))
-    learn(agent, agent_name)
+    learn(agent, noise = args.OU_noise)
     env.close()
