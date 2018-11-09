@@ -27,9 +27,9 @@ Two separate networks with identical architectures of the Actor are instansiated
 
 #### Critic Network
 
-<img align=center src="images/critic.png"  height="260" />
+The Critic network accepts the State and the Action vectors as input and estimates of the q-value (estimated discounted future reward)
 
-The Deep Q-Learning algorithm represents the optimal action-value function as a neural network instead of a table. The DQN takes the state as input and returns the predicted action values for each possible action.
+<img align=center src="images/critic.png"  height="260" />
 
 For the reasons stated above, two separate networks with identical architectures of the Critic are instansiated (local and target).
 
@@ -42,13 +42,14 @@ When the agent interacts with the environment, the sequence of experience tuples
 
 #### OU Noise
 
-In this implememntation the DDPG algorithm uses a correlated stochastic policy of the form:
-w ∼ OU(0, σ2)
-
-The exploration is realized through action space noise only. Note that training without noise was also found to have good performance, possibly due to the well defined reward function.
+In this implememntation the DDPG algorithm uses an Ornstein-Uhlenbeck process (correlated stochastic process) to add noise. The exploration is realized through action space noise only. Note that training without noise was also found to have good performance, possibly due to the well defined reward function.
 
 
 #### Learning Process - DDPG algorithm
+
+Initially the local and target Actor and Critic networks are instanciated with random weights. A series of actions are performed by passing the state of the environment through the local Actor network to select the action and optionally noise can be added to that action for exploration purposes. Tuples of the form (state, action, reward, next_state) are stored to the experience replay buffer.
+
+Once the experience replay is large enough the learning process can begin. A minibatch is randomly sampled from the experience buffer and used in the follwoing learning steps to update the networks as follows.
 
 The learning process can be broken into 3 steps:
 
@@ -60,18 +61,28 @@ The learning process can be broken into 3 steps:
 
 **Updating the Critic**
 
-Similar to DQN, the critic estimates the Q-value function using off-policy
-data and the recursive Bellman equation:
-where $\pi_{\theta}$ is the actor or policy.  \\]
+Similar to Deep-Q Networks (SQN), the Critic estimates the Q-value function using off-policy data and the recursive Bellman equation:
 
-<img src="https://latex.codecogs.com/svg.latex?Q(s_t,&space;a_t)&space;=&space;r(s_t,&space;a_t)&space;&plus;&space;\gammaQ&space;(s_{t&plus;1},&space;\pi_{\theta}(s_t&plus;1))" title="Q(s_t, a_t) = r(s_t, a_t) + \gammaQ (s_{t+1}, \pi_{\theta}(s_t+1))" />
+<img src="https://latex.codecogs.com/svg.latex?Q(s_t,&space;a_t)&space;=&space;r(s_t,&space;a_t)&space;&plus;&space;\gamma&space;Q&space;(s_{t&plus;1},&space;\pi_{\theta}(s_t&plus;1))" title="Q(s_t, a_t) = r(s_t, a_t) + \gamma Q (s_{t+1}, \pi_{\theta}(s_t+1))" />
 
-<img src="https://latex.codecogs.com/svg.latex?\Large&space;Q(s_t, a_t) = r(s_t, a_t) + \gamma Q (s_{t+1}, \pi_{\theta}(s_t+1))" title="\Large Q(s_t, a_t) = r(s_t, a_t) + \gammaQ (s_{t+1}, \pi_{\theta}(s_t+1))" />
+where <img src="https://latex.codecogs.com/svg.latex?\inline&space;\pi_{\theta}" title="\pi_{\theta}" /> is the actor or policy. 
 
-<img src="https://latex.codecogs.com/svg.latex?\Large&space;Q(s_t, a_t) = r(s_t, a_t) + \gamma Q (s_{t+1}, \pi_{\theta}(s_t+1))" title="\Large Q(s_t, a_t) = r(s_t, a_t) + \gammaQ (s_{t+1}, \pi_{\theta}(s_t+1))" />
 
-Q(s_t, a_t) = r(s_t, a_t) + \gammaQ (s_{t+1}, \pi_{\theta}(s_t+1))
-**Updating the Critic**
+The local Critic network is used to estimate the q-value of the current action taken given the current state:
+
+<img src="https://latex.codecogs.com/svg.latex?prediction_t=Q_{local}(s_t,&space;a_t)" title="prediction_t=Q_{local}(s_t, a_t)" />
+
+The target is defined as:
+
+<img src="https://latex.codecogs.com/svg.latex?y_t=r(s_t,a_t)&plus;\gamma&space;Q_{target}(s_{t&plus;1},\pi_{target}(s_{t&plus;1}))" title="y_t=r(s_t,a_t)+\gamma Q_{target}(s_{t+1},\pi_{target}(s_{t+1}))" />
+
+The loss of the Critic network is defined as the mean square error between the prediction and target across the minibatch. 
+
+
+<img src="https://latex.codecogs.com/svg.latex?y_t=r(s_t,a_t)&plus;\gamma&space;Q(s_{t&plus;1},\pi_{target}(s_{t&plus;1}))" title="y_t=r(s_t,a_t)+\gamma Q(s_{t+1},\pi_{target}(s_{t+1}))" />
+
+
+**Updating the Actor**
 
 The actor is trained to maximize the critic’s estimated Q-values by
 back-propagating through both networks. 
