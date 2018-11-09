@@ -23,6 +23,8 @@ The Actor takes the State as input and outputs the what the agent believes to be
 
 <img align=center src="images/actor.png"  height="220" />
 
+**Architecture**: 3 hidden layers were used (300, 500, 200 nodes respectively) with ReLU activation. The output layer had a *tanh* activation to ensure the action vector values were between -1 and 1.
+
 Two separate networks with identical architectures of the Actor are instansiated; one local and one target. The target network's weights are updated less often than the local network. Without fixed targets, we would encounter a harmful form of correlation, whereby we shift the parameters of the network based on a constantly moving target.
 
 #### Critic Network
@@ -31,7 +33,9 @@ The Critic network accepts the State and the Action vectors as input and estimat
 
 <img align=center src="images/critic.png"  height="260" />
 
-For the reasons stated above, two separate networks with identical architectures of the Critic are instansiated (local and target).
+**Architecture**: 3 hidden layers were used (300, 500, 200 nodes respectively) with ReLU activation. The output layer had a linear activation.
+
+For the reasons stated above, two separate networks with identical architectures of the Critic are instanciated (local and target).
 
 
 #### Experience Replay
