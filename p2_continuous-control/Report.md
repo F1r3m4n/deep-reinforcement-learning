@@ -61,7 +61,7 @@ The learning process can be broken into 3 steps:
 
 **Updating the Critic**
 
-Similar to Deep-Q Networks (SQN), the Critic estimates the Q-value function using off-policy data and the recursive Bellman equation:
+Similar to Deep-Q Networks (DQN), the Critic estimates the Q-value function using off-policy data and the recursive Bellman equation:
 
 <img src="https://latex.codecogs.com/svg.latex?Q(s_t,&space;a_t)&space;=&space;r(s_t,&space;a_t)&space;&plus;&space;\gamma&space;Q&space;(s_{t&plus;1},&space;\pi_{\theta}(s_t&plus;1))" title="Q(s_t, a_t) = r(s_t, a_t) + \gamma Q (s_{t+1}, \pi_{\theta}(s_t+1))" />
 
@@ -87,32 +87,37 @@ The Actor is trained to maximize the Critic’s estimated Q-values. The local Ac
 
 <img src="https://latex.codecogs.com/svg.latex?loss&space;=&space;-\frac{1}{N}\sum&space;Q_{local}(s_t,\pi_{local}(s_t))" title="loss = -\frac{1}{N}\sum Q_{local}(s_t,\pi_{local}(s_t))" />
 
-
+The loss is then used to update the Actor network.
 
 **Updating target networks**
 
 After every learning step, perform a soft update of the Critic and Actor target networks' weights from the corresponding local networks.
 
+<img src="https://latex.codecogs.com/svg.latex?\theta^{Q^{target}}&space;\leftarrow&space;\tau&space;\theta^{Q^{local}}&space;&plus;&space;(1&space;-&space;\tau)\theta^{Q^{target}}" title="\theta^{Q^{target}} \leftarrow \tau \theta^{Q^{local}} + (1 - \tau)\theta^{Q^{target}}" />
+
+<img src="https://latex.codecogs.com/svg.latex?\theta^{\pi^{target}}&space;\leftarrow&space;\tau&space;\theta^{\pi^{local}}&space;&plus;&space;(1&space;-&space;\tau)\theta^{\pi^{target}}" title="\theta^{\pi^{target}} \leftarrow \tau \theta^{\pi^{local}} + (1 - \tau)\theta^{\pi^{target}}" />
+
+where <img src="https://latex.codecogs.com/svg.latex?\inline&space;\tau" title="\tau" /> is a small value
 
 
 
 ### Chosen Hyperparameters
 
-The following hyperparameters were chosen following a trial and error approach
+The following hyperparameters were chosen following a trial and error approach. Key to the stability of learning was the low learning rate, larger batch size and the number of steps between updates. In addition, small replay buffer sizes lead to a collapse of the performance after some episodes.
 
 * Replay buffer size: 300000
 * Minibatch size for training: 256
 * Discount factor: 0.99
 * Interpolation parameter for soft update of target parameters: 0.0009
 * Optimizer: Adam
-* Learning rate (Actor): 0.0001
+* Learning rate (Actor): 0.00009
 * Learning rate (Critic): 0.0005
 * Steps between netwok update: 2 updates every 4 timesteps
 
 
 ## Plot of Rewards
 
-The following plots of the rewards per episode illustrate that the agent is able to receive an average reward (over 100 episodes) of at least +30. The table also shows how many episodes were needed to solve the environment.
+The following plots of the rewards per episode illustrate that the agent is able to receive an average reward (over 100 episodes) of at least +30. Here 91 episodes were needed to solve the environment.
 
 <table style="width:500%" border=1>
   <tr>
@@ -127,4 +132,6 @@ The following plots of the rewards per episode illustrate that the agent is able
 ## Ideas for Future Work
 
 One key improvement to make would be to use a prioritised replay buffer. It has been shown that experience replay allows online reinforcement learning agents to reuse experiences that are not sequencial and from different times. The algorithm used here uniformly samples experience transitions from a replay memory. Although this approach is effective, it only replays transitions at the same frequency that they were originally experienced, regardless of their significance. As shown in this [paper](https://arxiv.org/abs/1511.05952 "arXiv:1511.05952") prioritising experience, so as to replay important transitions more frequently, leads to more efficient learning. 
+
+Another improvement would be to use a distributed version of the DDPG algorithm [D4PG](https://arxiv.org/pdf/1804.08617.pdf") and train on an environment with multiple agents running simultaneously. The above paper shows that combination of the above modifications achieves state of the art performance in continuous control problems.
 
