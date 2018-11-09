@@ -65,7 +65,7 @@ Similar to Deep-Q Networks (SQN), the Critic estimates the Q-value function usin
 
 <img src="https://latex.codecogs.com/svg.latex?Q(s_t,&space;a_t)&space;=&space;r(s_t,&space;a_t)&space;&plus;&space;\gamma&space;Q&space;(s_{t&plus;1},&space;\pi_{\theta}(s_t&plus;1))" title="Q(s_t, a_t) = r(s_t, a_t) + \gamma Q (s_{t+1}, \pi_{\theta}(s_t+1))" />
 
-where <img src="https://latex.codecogs.com/svg.latex?\inline&space;\pi_{\theta}" title="\pi_{\theta}" /> is the actor or policy. 
+where <img src="https://latex.codecogs.com/svg.latex?\inline&space;\pi_{\theta}" title="\pi_{\theta}" /> is the Actor or policy. 
 
 
 The local Critic network is used to estimate the q-value of the current action taken given the current state:
@@ -76,20 +76,22 @@ The target is defined as:
 
 <img src="https://latex.codecogs.com/svg.latex?y_t=r(s_t,a_t)&plus;\gamma&space;Q_{target}(s_{t&plus;1},\pi_{target}(s_{t&plus;1}))" title="y_t=r(s_t,a_t)+\gamma Q_{target}(s_{t+1},\pi_{target}(s_{t+1}))" />
 
-The loss of the Critic network is defined as the mean square error between the prediction and target across the minibatch. 
 
+The loss of the Critic network is defined as the mean square error between the prediction and target across the minibatch. The loss is then used to update the Critic network.
 
-<img src="https://latex.codecogs.com/svg.latex?y_t=r(s_t,a_t)&plus;\gamma&space;Q(s_{t&plus;1},\pi_{target}(s_{t&plus;1}))" title="y_t=r(s_t,a_t)+\gamma Q(s_{t+1},\pi_{target}(s_{t+1}))" />
 
 
 **Updating the Actor**
 
-The actor is trained to maximize the critic’s estimated Q-values by
-back-propagating through both networks. 
+The Actor is trained to maximize the Critic’s estimated Q-values. The local Actor network is used to generate an action vector given a state which in turn is passed through the Critic network to estimate the q-value of the action. The loss is hence defined as:
+
+<img src="https://latex.codecogs.com/svg.latex?loss&space;=&space;-\frac{1}{N}\sum&space;Q_{local}(s_t,\pi_{local}(s_t))" title="loss = -\frac{1}{N}\sum Q_{local}(s_t,\pi_{local}(s_t))" />
+
+
 
 **Updating target networks**
 
-
+After every learning step, perform a soft update of the Critic and Actor target networks' weights from the corresponding local networks.
 
 
 
