@@ -71,13 +71,13 @@ Similar to Deep-Q Networks (DQN), the Critic estimates the Q-value function usin
 where <img src="https://latex.codecogs.com/svg.latex?\inline&space;\pi_{\theta}" title="\pi_{\theta}" /> is the Actor or policy. 
 
 
-The local Critic network is used to estimate the q-value of the current action taken given the current state:
+The local Critic network is used to estimate the q-value of the current actions taken by all agents given the current states of all agents:
 
-<img src="https://latex.codecogs.com/svg.latex?prediction_t=Q_{local}(s_t,&space;a_t)" title="prediction_t=Q_{local}(s_t, a_t)" />
+<img src="https://latex.codecogs.com/svg.latex?prediction_t=Q_{local}(s_{1t},&space;.&space;.&space;.&space;,&space;s_{Nt},a_{1t},&space;.&space;.&space;.&space;,&space;a_{Nt})" title="prediction_t=Q_{local}(s_{1t}, . . . , s_{Nt},a_{1t}, . . . , a_{Nt})" />
 
 The target is defined as:
 
-<img src="https://latex.codecogs.com/svg.latex?y_t=r(s_t,a_t)&plus;\gamma&space;Q_{target}(s_{t&plus;1},\pi_{target}(s_{t&plus;1}))" title="y_t=r(s_t,a_t)+\gamma Q_{target}(s_{t+1},\pi_{target}(s_{t+1}))" />
+<img src="https://latex.codecogs.com/svg.latex?y_t=r(s_{1t},a_{1t})&plus;\gamma&space;Q_{target}(s_{1t&plus;1},...,s_{Nt&plus;1},\pi_{1target}(s_{1t&plus;1}),...,\pi_{Ntarget}(s_{Nt&plus;1}))" title="y_t=r(s_{1t},a_{1t})+\gamma Q_{target}(s_{1t+1},...,s_{Nt+1},\pi_{1target}(s_{1t+1}),...,\pi_{Ntarget}(s_{Nt+1}))" />
 
 
 The loss of the Critic network is defined as the mean square error between the prediction and target across the minibatch. The loss is then used to update the Critic network.
@@ -88,7 +88,7 @@ The loss of the Critic network is defined as the mean square error between the p
 
 The Actor is trained to maximize the Critic’s estimated Q-values. The local Actor network is used to generate an action vector given a state which in turn is passed through the Critic network to estimate the q-value of the action. Policies of other agents are assumed to be known here. The loss is hence defined as:
 
-<img src="https://latex.codecogs.com/svg.latex?loss&space;=&space;-\frac{1}{N}\sum&space;Q_{local}(s_t,\pi_{local}(s_t))" title="loss = -\frac{1}{N}\sum Q_{local}(s_t,\pi_{local}(s_t))" />
+<img src="https://latex.codecogs.com/svg.latex?loss=-\frac{1}{N}\sum&space;Q_{local}(s_{1t},...,s_{Nt},\pi_{1local}(s_{1t}),...,\pi_{Nlocal}(s_{Nt}))" title="loss=-\frac{1}{N}\sum Q_{local}(s_{1t},...,s_{Nt},\pi_{1local}(s_{1t}),...,\pi_{Nlocal}(s_{Nt}))" />
 
 The loss is then used to update the Actor network.
 
@@ -121,14 +121,14 @@ The following hyperparameters were chosen following a trial and error approach. 
 
 ## Plot of Rewards
 
-The following plots of the rewards per episode illustrate that the agent is able to receive an average reward (over 100 episodes) of at least +30. Here 91 episodes were needed to solve the environment.
+The following plots of the rewards per episode illustrate that the agent is able to receive an average reward (over 100 episodes) of at least +0.5. Here 2381 episodes were needed to solve the environment. A maximum reward of +1.76 over 100 episodes was achieved after 2580 episides.
 
 <table style="width:500%" border=1>
   <tr>
-    <th align=center>Agent: DDPG, Solved in: 91 episodes</th>
+    <th align=center>Agent: MADDPG, Solved in: 2381 episodes</th>
   </tr>
   <tr>
-    <td align=center><img src="images/scores.png" width="400" height="300" /></td>
+    <td align=center><img src="images/scores.png" width="800" height="300" /></td>
   </tr>
 </table>
 
