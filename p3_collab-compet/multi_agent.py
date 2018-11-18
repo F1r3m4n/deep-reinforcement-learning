@@ -4,7 +4,6 @@ import random
 import torch
 import numpy as np
 
-#device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 device = 'cpu'
 
 BUFFER_SIZE = int(1e5)  # replay buffer size
@@ -42,7 +41,6 @@ class MADDPG:
 
     def target_act(self, obs_all_agents, noise=0.0):
         """get target network actions from all the agents in the MADDPG object """
-        #target_actions = [agent.target_act(obs, noise) for agent, obs in zip(self.maddpg_agent, obs_all_agents)]
         a_s = zip(self.maddpg_agent, obs_all_agents.view(self.num_agents, BATCH_SIZE, -1))
         target_actions = torch.stack([agent.target_act(obs, noise) for agent, obs in a_s]).view(BATCH_SIZE, self.num_agents, -1)
         return target_actions
@@ -62,22 +60,21 @@ class MADDPG:
                 for i in range(UPDATE_BATCHES):
                     for a_i in range(self.num_agents):
                         experiences = self.memory.sample()
+                        # Update Critic and Actor of each agent
                         self.learn(experiences, a_i)
+                        # Update target networks
                         self.update_targets()
 
     def learn(self, samples, agent_number):
         """update the critics and actors of all the agents """
 
         obs, obs_full, action, reward, next_obs, next_obs_full, done = samples
-
-        #obs_full = torch.stack(obs_full)
-        #next_obs_full = torch.stack(next_obs_full)
         
         agent = self.maddpg_agent[agent_number]
+        
+        # ---------------------------- update Critic ---------------------------- #
         agent.critic_optimizer.zero_grad()
 
-        #critic loss = batch mean of (y- Q(s,a) from target network)^2
-        #y = reward of this timestep + discount * Q(st+1,at+1) from target network
         target_actions = self.target_act(next_obs)
         target_actions = torch.cat(list(target_actions.t()), dim=1)
         
@@ -97,32 +94,25 @@ class MADDPG:
         torch.nn.utils.clip_grad_norm_(agent.critic_local.parameters(), 0.5)
         agent.critic_optimizer.step()
 
-        #update actor network using policy gradient
+        # ---------------------------- update Actor ---------------------------- #
         agent.actor_optimizer.zero_grad()
-        # make input to agent
-        # detach the other agents to save computation
-        # saves some time for computing derivative
+
         q_input = [ self.maddpg_agent[i].actor_local(ob) if i == agent_number \
                    else self.maddpg_agent[i].actor_local(ob).detach()
                    for i, ob in enumerate(obs.t())]
         
         q_input = torch.stack(q_input).t()
-                
         q_input = torch.cat(list(q_input.t()), dim=1)
-        # combine all the actions and observations for input to critic
-        # many of the obs are redundant, and obs[1] contains all useful information already
         q_input2 = torch.cat((obs_full.view(BATCH_SIZE, -1), q_input), dim=1)
         
-        # get the policy gradient
         actor_loss = -agent.critic_local(q_input2).mean()
         actor_loss.backward()
-        #torch.nn.utils.clip_grad_norm_(agent.actor_local.parameters(),0.5)
+        # torch.nn.utils.clip_grad_norm_(agent.actor_local.parameters(),0.5)
         agent.actor_optimizer.step()
 
         al = actor_loss.cpu().detach().item()
         cl = critic_loss.cpu().detach().item()
         
-
     def update_targets(self):
         """soft update targets"""
         for agent in self.maddpg_agent:

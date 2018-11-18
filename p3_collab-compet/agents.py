@@ -1,15 +1,10 @@
-# individual network settings for each actor + critic pair
-
 from models import Actor, Critic 
 from torch.optim import Adam
 import torch
 import numpy as np
 
-
-# add OU noise for exploration
 from OUnoise import OUNoise
 
-#device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 device = 'cpu'
 
 LR_ACTOR = 9e-5         # learning rate of the actor 

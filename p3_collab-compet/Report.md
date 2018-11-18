@@ -135,8 +135,7 @@ The following plots of the rewards per episode illustrate that the agent is able
 
 ## Ideas for Future Work
 
-One key improvement to make would be to use a prioritised replay buffer. It has been shown that experience replay allows online reinforcement learning agents to reuse experiences that are not sequencial and from different times. The algorithm used here uniformly samples experience transitions from a replay memory. Although this approach is effective, it only replays transitions at the same frequency that they were originally experienced, regardless of their significance. As shown in this [paper](https://arxiv.org/abs/1511.05952 "arXiv:1511.05952") prioritising experience, so as to replay important transitions more frequently, leads to more efficient learning. 
+A common problem in multi-agent reinforcement learning is the environment non-stationarity due to the agents’ changing policies. Agents can derive a strong policy by overfitting to the behavior of other agents they are collaborating or competing with. Such policies are undesirable as they are brittle and may fail when the collaborators/competitors modify their strategies.
 
-Another improvement would be to use a distributed version of the DDPG algorithm [D4PG](https://arxiv.org/pdf/1804.08617.pdf") and train on an environment with multiple agents running simultaneously. The above paper shows that combination of the above modifications achieves state of the art performance in continuous control problems.
-
+A potential way to minimise such effects would be to train a collection of different sub-policies. At each episode, a random sub-policy would be selected for each agent to execute and the agent policy is considered to be the ensemble of sub-policies. For each agent therefore the goal is to maximizing the ensemble objective.
 
